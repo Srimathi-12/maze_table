@@ -1,0 +1,157 @@
+  # # Create indexes for keys used in search_params and selected_checkboxes
+    # for key in search_params.keys():
+    #     collection.create_index([(key, ASCENDING)])
+
+    # for key in selected_checkboxes.keys():
+    #     collection.create_index([(key, ASCENDING)])
+
+
+    # # Construct query to filter data based on selected checkboxes
+    # checkbox_query = {}
+    # for key, values in selected_checkboxes.items():
+    #     if values:  # If there are selected checkboxes for the key
+    #         checkbox_query[key] = {'$in': values}
+
+    # if checkbox_query:  # If there are selected checkboxes, add them to the main query
+    #     query.update(checkbox_query)
+
+    # # If all search parameters are empty, return all distinct values
+    # if all(value == '' for value in search_params.values()):
+    #     for param in search_params.keys():
+    #         distinct_values[param] = collection.distinct(param)
+    # else:
+    #     # If any search parameter has a value, search for distinct values based on provided parameters
+    #     for param, value in search_params.items():
+    #         if value != '':
+    #             # Search for distinct values matching the provided parameter and value
+    #             distinct_values[param] = collection.distinct(param, {param: {'$regex': value}})
+
+    
+                # values = list(filter(lambda x: enter_value in str(x), values))
+        # if(selected_checkboxes != ''):
+        #     print(selected_checkboxes,"selected_checkboxes")
+        #     for value in selected_checkboxes:
+        #         if values:
+        #             checkbox_query[distinct_key] = {'$in' : value}
+        #             print(checkbox_query,"checkbox_query")
+    
+     # Construct a dynamic query based on enter_value
+    # Initialize query with empty filter
+    # query = {}
+
+    # # Add filters based on enter_value if provided
+    # if enter_value:
+    #     for field, value in enter_value.items():
+    #         query[field] = value
+
+    # # Execute the query
+    # result = collection.find(query)
+
+    # # Get total count of documents that match the query
+    # total = collection.count_documents(result)
+
+    # # Determine the range for pagination
+    # start_index = (page - 1) * items_per_page
+    # end_index = start_index + items_per_page
+
+    # # Retrieve filtered data from MongoDB using range queries, excluding _id field from results
+    # filtered_data = list(collection.find(result, {'_id': 0})
+    #                      .sort('_id')  # Assuming _id is the unique sortable field 
+    #                      .skip(start_index)
+    #                      .limit(items_per_page))
+
+    # return jsonify({"total": total, "data": filtered_data, "distinct_values": distinct_values})
+    # Get total count of documents that match the query
+
+
+                # Find unique values for each column
+        # unique_values = {}
+        # if result:
+        #     first_document = result[0]
+        #     for key in first_document:
+        #         unique_values[key] = collection.distinct(key, query)
+
+
+
+    items_per_page = search_queries['per_page']
+    page = search_queries['page']
+    selected_checkboxes = search_queries['selected_checkboxes']
+    enter_value = search_queries['enter_value']
+    
+    query = {}
+    distinct_values = {}
+    
+    if enter_value:
+        result = []
+        filtered_data = []
+        for field, value in enter_value.items():
+            print(value,"enter_valuevalue")
+            query[field] = {"$regex": value, "$options": "i"}
+            print(query,"queryquery")
+
+        total = collection.count_documents(query)
+        start_index = (page - 1) * items_per_page
+        end_index = start_index + items_per_page        
+       
+        filtered_data = collection.find(query, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page)
+        print(filtered_data,"filtered_data")
+        result = list(filtered_data)
+        print(result,"result")
+        
+        return jsonify({"total": total, "data": result})
+                
+    else:
+        return jsonify({"total": [], "data": [], "distinct_values": []})
+
+
+            const distinctKey = [
+      msisdn,
+      source_ip,
+      source_port,
+      destination_ip,
+      destination_port,
+      cell_id,
+      company,
+      domain,
+      service,
+      time,
+      time_et,
+      duration,
+      uplink_vol,
+      downlink_vol,
+      com_type,
+      roaming,
+      provider
+    ];
+
+      # if distinct_key != '':
+    #     columnName = distinct_key
+    #     distinctSearch = enter_value
+
+    #     # Collecting unique values for the specified column
+    #     for entry in total_data:
+    #         if columnName in entry:
+    #             values.add(entry[columnName])
+
+    #     if enter_value != '':
+    #         values = [value for value in values if enter_value in str(value)]
+
+    # # Constructing a dictionary with field names and their unique values
+    # unique_values = {distinct_key: list(values)} if distinct_key else {}
+
+    # print(unique_values,"unique_valuesunique_values")
+
+        let selectedCheckboxes = [];
+
+    function handleCheckboxSelection(value) {
+        const index = selectedCheckboxes.indexOf(value);
+        if (index === -1) {
+            selectedCheckboxes.push(value);
+            console.log(selectedCheckboxes, "selectedCheckboxes");
+        } else {
+            selectedCheckboxes.splice(index, 1);
+            console.log(selectedCheckboxes, "deselected");
+        }
+        isChecked = !isChecked;
+        fetchData(currentPage);
+    }
