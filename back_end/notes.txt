@@ -155,3 +155,8 @@
         isChecked = !isChecked;
         fetchData(currentPage);
     }
+
+         # Applying additional filtering based on selected checkboxes
+    # for key, values in selected_checkboxes.items():
+    #     if key in distinct_key:
+    #         filtered_data = [data for data in filtered_data if data.get(key) in values]
