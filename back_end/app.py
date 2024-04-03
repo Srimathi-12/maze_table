@@ -24,8 +24,6 @@ def search():
     input_value = search_queries['input_value']
     page = search_queries['page']
     items_per_page = search_queries['items_per_page']
-    distinct_key = search_queries['distinct_key']
-    search_params = search_queries['search_params']
     selected_checkboxes = search_queries['selected_checkboxes']
     bind_start_date = search_queries['bind_start_date']
     bind_end_date = search_queries['bind_end_date']
@@ -33,31 +31,66 @@ def search():
 
     filtered_data = []
     total_filter = []
-    total_data = []
-    start_index = (page - 1) * items_per_page
-    
-    startdate_obj = datetime.strptime(bind_start_date, "%Y-%m-%dT%H:%M")
-    enddate_obj = datetime.strptime(bind_end_date, "%Y-%m-%dT%H:%M")
-
-    total_data = list(collection.find({'msisdn':input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, {'_id': 0}))
-    
-    print(startdate_obj,enddate_obj,"startenddate")
-    
-    # Applying filters based on selected checkboxes
     filters = []
+    start_index = (page - 1) * items_per_page
+    # Applying filters based on selected checkboxes
     for key, values in selected_checkboxes.items():
-        filters.append({key: {"$in": [str(value) for value in values]}})
-
-    if filters:
-        filter_query = {"$and": filters}  
-        total_filter = collection.count_documents({"$and": [{'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, filter_query]})
-        filtered_data = list(collection.find({"$and": [{'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, filter_query]}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
-    else:
-        total_filter = collection.count_documents({'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}})
-        filtered_data = list(collection.find({'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
+        print(values,"values")
+        if(key != 'time' and key != 'time_et'):
+            print(values,"valuesvalues")
+            filters.append({key: {"$in": [value for value in values]}})
+            print(filters)
+        else:
+            if(key == 'time' or key == 'time_et'):     
+                print("enter it checked")     
+                filters.append({key: {"$in": [datetime.strptime(value, "%Y-%m-%d %H:%M:%S") for value in values]}})
+                
+    # Condition for accept both input value and date
+    if(input_value != "" and bind_start_date != "" and bind_end_date != ""):
+        startdate_obj = datetime.strptime(bind_start_date, "%Y-%m-%dT%H:%M")
+        enddate_obj = datetime.strptime(bind_end_date, "%Y-%m-%dT%H:%M")
+        if filters:
+            filter_query = {"$and": filters}  
+            total_filter = collection.count_documents({"$and": [{'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, filter_query]})
+            filtered_data = list(collection.find({"$and": [{'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, filter_query]}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
+        else:
+            total_filter = collection.count_documents({'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}})
+            filtered_data = list(collection.find({'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
     
-   # Finding unique values for each key in distinct_key
+    # Condition for accept only input value
+    if(input_value != "" and bind_start_date == "" and bind_end_date == ""):
+        if filters:
+            filter_query = {"$and": filters}  
+            total_filter = collection.count_documents({"$and": [{'msisdn': input_value}, filter_query]})
+            filtered_data = list(collection.find({"$and": [{'msisdn': input_value}, filter_query]}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
+        else:
+            total_filter = collection.count_documents({'msisdn': input_value})
+            filtered_data = list(collection.find({'msisdn': input_value}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))   
+            
+    print(filtered_data,"filtered_data")   
+    
+    return jsonify({"data": filtered_data,"total": total_filter})
+
+@app.route('/unique_data', methods=['POST'])
+def unique_data():
+    search_queries = request.json
+    distinct_key = search_queries['distinct_key']
+    input_value = search_queries['input_value']
+    search_params = search_queries['search_params']
+    bind_start_date = search_queries['bind_start_date']
+    bind_end_date = search_queries['bind_end_date']
+    
+    total_data = []
     unique_values = {}
+    
+    if(input_value != "" and bind_start_date != "" and bind_end_date != ""):
+        startdate_obj = datetime.strptime(bind_start_date, "%Y-%m-%dT%H:%M")
+        enddate_obj = datetime.strptime(bind_end_date, "%Y-%m-%dT%H:%M")
+        print(startdate_obj,enddate_obj,"startenddate")
+        total_data = list(collection.find({'msisdn':input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, {'_id': 0}))
+    if(input_value != "" and bind_start_date == "" and bind_end_date == ""):
+        total_data = list(collection.find({'msisdn':input_value}, {'_id': 0}))
+    
     for key in distinct_key:
         unique_values[key] = set()
 
@@ -69,16 +102,15 @@ def search():
     # Convert sets to lists
     for key, values in unique_values.items():
         unique_values[key] = list(values)
-     
-     # Filtering unique values based on search parameters
+        
+    # Filtering unique values based on search parameters
     for key, value in search_params.items():
-        if key in unique_values:
-            unique_values[key] = [v for v in unique_values[key] if value in str(v)]
+        if(key != 'time' and key != 'time_et'):
+            if key in unique_values:
+                unique_values[key] = [v for v in unique_values[key] if value in str(v)]
+        
+    return jsonify({"unique_values":unique_values})
     
-    # filtered_data = list(collection.find({input_field_name:input_value}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
-    
-    return jsonify({"data": filtered_data,"total": total_filter,"unique_values":unique_values})
-
 if __name__ == '__main__':
     app.run(debug=True)
 

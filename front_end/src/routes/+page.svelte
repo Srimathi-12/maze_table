@@ -16,8 +16,8 @@
 	let result = [];
 	let uniqueResponseValues = {};
 	let length = '';
-	let bindStartDate = new Date();
-	let bindEndDate = new Date();
+	let bindStartDate = "";
+	let bindEndDate = "";
 	console.log(bindStartDate, 'bindStartDatebindStartDate');
 	console.log(bindEndDate, 'bindEndDatebindEndDate');
 
@@ -39,20 +39,16 @@
 					page: currentPage,
 					items_per_page: itemsPerPage,
 					selected_checkboxes: selectedCheckboxes,
-					distinct_key: distinctKey,
-					search_params: searchParams,
 					bind_start_date: bindStartDate,
 					bind_end_date: bindEndDate
 				})
-			});
+			})
 			const data = await response.json();
 			console.log(data, 'datadata');
 			searchData = data.data;
 			console.log(searchData, 'searchDatasearchData');
 			length = data.total;
 			result = data.result;
-			uniqueResponseValues = data.unique_values;
-			console.log(uniqueResponseValues, 'uniqueResponseValues');
 			total_page = Math.ceil(length / itemsPerPage);
 			console.log(total_page, 'total_counttotal_count');
 		} catch (error) {
@@ -60,8 +56,32 @@
 		}
 	}
 
+  async function fetchUniqueValues() {
+		try {
+      const uniquedata = await fetch('http://localhost:5000/unique_data', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					input_value: inputValue,
+					distinct_key: distinctKey,
+					search_params: searchParams,
+					bind_start_date: bindStartDate,
+					bind_end_date: bindEndDate
+				})
+			})
+      const unique_data = await uniquedata.json();
+      console.log(unique_data,"unique_data")
+			uniqueResponseValues = unique_data.unique_values;
+			console.log(uniqueResponseValues, 'uniqueResponseValues');
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		}
+	}
+
 	const handleSearch = () => {
-		fetchData(currentPage);
+		fetchUniqueValues()
 	};
 
 	let distinctKey = {
@@ -120,6 +140,7 @@
 	}
 	function onSubmit() {
 		fetchData(currentPage);
+    fetchUniqueValues();
 	}
 
 	function handlePrevious(total_page) {
@@ -189,6 +210,7 @@
 
 	onMount(() => {
 		fetchData(currentPage);
+    fetchUniqueValues();
 	});
 </script>
 
@@ -205,15 +227,13 @@
 				<div>
 					<input
 						type="datetime-local"
-						value={bindStartDate}
-						on:input={(e) => (bindStartDate = e.target.value || bindStartDate)}
+            bind:value={bindStartDate}
 					/>
 				</div>
 				<div>
 					<input
 						type="datetime-local"
-						value={bindEndDate}
-						on:input={(e) => (bindEndDate = e.target.value || bindEndDate)}
+						bind:value={bindEndDate}
 					/>
 				</div>
 				<div>
@@ -683,11 +703,11 @@
 														<li>
 															<input
 																type="checkbox"
-																on:change={() => handleCheckboxSelection('time', time_values)}
+																on:change={() => handleCheckboxSelection('time', convertToISO8601(time_values))}
 																checked={selectedCheckboxes['time'] &&
-																	selectedCheckboxes['time'].includes(time_values)}
+																	selectedCheckboxes['time'].includes(convertToISO8601(time_values))}
 															/>
-															{time_values}
+															{convertToISO8601(time_values)}
 														</li>
 													</ul>
 												{/each}
@@ -715,11 +735,11 @@
 														<li>
 															<input
 																type="checkbox"
-																on:change={() => handleCheckboxSelection('time_et', time_et_values)}
+																on:change={() => handleCheckboxSelection('time_et', convertToISO8601(time_et_values))}
 																checked={selectedCheckboxes['time_et'] &&
-																	selectedCheckboxes['time_et'].includes(time_et_values)}
+																	selectedCheckboxes['time_et'].includes(convertToISO8601(time_et_values))}
 															/>
-															{time_et_values}
+															{convertToISO8601(time_et_values)}
 														</li>
 													</ul>
 												{/each}
@@ -1011,9 +1031,6 @@
 		border: 1px solid #d9d9d9;
 		border-radius: 4px;
 	}
-	.table-counts {
-		height: 6vh;
-	}
 	tbody,
 	td,
 	tfoot,
@@ -1106,18 +1123,10 @@
 		color: #5cb2eb;
 		border-bottom: #5cb2eb;
 	}
-	.multiselect-container {
-		position: relative;
-	}
-
+  
 	.filter-icon {
 		cursor: pointer;
 	}
-
-	.open-dropdown::after {
-		content: ' ▲';
-	}
-
 	.options-container {
 		max-height: 200px;
 		overflow-y: auto;
@@ -1131,10 +1140,6 @@
 	}
 	.list-style {
 		list-style: none;
-	}
-	.filter-button {
-		display: flex;
-		justify-content: space-between;
 	}
 	.header-align {
 		display: flex;
