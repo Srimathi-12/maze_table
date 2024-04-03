@@ -703,11 +703,11 @@
 														<li>
 															<input
 																type="checkbox"
-																on:change={() => handleCheckboxSelection('time', convertToISO8601(time_values))}
+																on:change={() => handleCheckboxSelection('time', time_values)}
 																checked={selectedCheckboxes['time'] &&
-																	selectedCheckboxes['time'].includes(convertToISO8601(time_values))}
+																	selectedCheckboxes['time'].includes(time_values)}
 															/>
-															{convertToISO8601(time_values)}
+															{time_values}
 														</li>
 													</ul>
 												{/each}
@@ -735,11 +735,11 @@
 														<li>
 															<input
 																type="checkbox"
-																on:change={() => handleCheckboxSelection('time_et', convertToISO8601(time_et_values))}
+																on:change={() => handleCheckboxSelection('time_et', time_et_values)}
 																checked={selectedCheckboxes['time_et'] &&
-																	selectedCheckboxes['time_et'].includes(convertToISO8601(time_et_values))}
+																	selectedCheckboxes['time_et'].includes(time_et_values)}
 															/>
-															{convertToISO8601(time_et_values)}
+															{time_et_values}
 														</li>
 													</ul>
 												{/each}

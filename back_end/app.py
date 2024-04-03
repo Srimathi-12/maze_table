@@ -15,8 +15,8 @@ CORS(app)
 
 # Connect to MongoDB
 client = MongoClient('mongodb://localhost:27017/')
-db = client['CDAT']  # Replace 'your_database' with your actual database name
-collection = db['raw_data']  # Replace 'your_collection' with your actual collection name
+db = client['CDAT']  # database name
+collection = db['raw_data']  # collection name
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -97,7 +97,10 @@ def unique_data():
     for data in total_data:
         for key in distinct_key:
             if key in data:
-                unique_values[key].add(data[key])
+                if key == 'time' or key == 'time_et':
+                    unique_values[key].add(data[key].strftime("%Y-%m-%d %H:%M:%S"))
+                else:
+                    unique_values[key].add(data[key])
 
     # Convert sets to lists
     for key, values in unique_values.items():
@@ -105,7 +108,6 @@ def unique_data():
         
     # Filtering unique values based on search parameters
     for key, value in search_params.items():
-        if(key != 'time' and key != 'time_et'):
             if key in unique_values:
                 unique_values[key] = [v for v in unique_values[key] if value in str(v)]
         
