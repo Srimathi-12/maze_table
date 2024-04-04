@@ -56,6 +56,8 @@ def search():
         else:
             total_filter = collection.count_documents({'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}})
             filtered_data = list(collection.find({'msisdn': input_value, 'time':{'$gte': datetime.combine(startdate_obj, datetime.min.time()),'$lte': datetime.combine(enddate_obj, datetime.max.time())}}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
+        if  filtered_data == []:
+            filtered_data = "no matched data found"
     
     # Condition for accept only input value
     if(input_value != "" and bind_start_date == "" and bind_end_date == ""):
@@ -65,7 +67,11 @@ def search():
             filtered_data = list(collection.find({"$and": [{'msisdn': input_value}, filter_query]}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))
         else:
             total_filter = collection.count_documents({'msisdn': input_value})
-            filtered_data = list(collection.find({'msisdn': input_value}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page))   
+            filtered_data = list(collection.find({'msisdn': input_value}, {'_id': 0}).sort('_id').skip(start_index).limit(items_per_page)) 
+        if  filtered_data == []:
+            filtered_data = "no matched data found"
+            
+    
             
     print(filtered_data,"filtered_data")   
     

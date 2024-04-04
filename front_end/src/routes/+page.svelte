@@ -14,10 +14,13 @@
 	let page_count = 0;
 	let searchData = [];
 	let result = [];
+  let noMatch;
 	let uniqueResponseValues = {};
 	let length = '';
 	let bindStartDate = "";
 	let bindEndDate = "";
+  let isOpen = false;
+  let isDisable =false;
 	console.log(bindStartDate, 'bindStartDatebindStartDate');
 	console.log(bindEndDate, 'bindEndDatebindEndDate');
 
@@ -124,13 +127,16 @@
 	};
 
 	function convertToISO8601(textDate) {
-		// Parse the input date string into a Date object
-		const inputDate = new Date(textDate);
+    if(textDate != undefined){
+      console.log(textDate,"textDate")
+      // Parse the input date string into a Date object
+      const inputDate = new Date(textDate);
 
-		// Format the Date object into the desired output format
-		const outputDateString = `${inputDate.getUTCFullYear()}-${(inputDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${inputDate.getUTCDate().toString().padStart(2, '0')} ${inputDate.getUTCHours().toString().padStart(2, '0')}:${inputDate.getUTCMinutes().toString().padStart(2, '0')}:${inputDate.getUTCSeconds().toString().padStart(2, '0')}`;
+      // Format the Date object into the desired output format
+      const outputDateString = `${inputDate.getUTCFullYear()}-${(inputDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${inputDate.getUTCDate().toString().padStart(2, '0')} ${inputDate.getUTCHours().toString().padStart(2, '0')}:${inputDate.getUTCMinutes().toString().padStart(2, '0')}:${inputDate.getUTCSeconds().toString().padStart(2, '0')}`;
 
-		return outputDateString;
+      return outputDateString;
+    }
 	}
 
 	let inputValue = '';
@@ -184,9 +190,11 @@
 	}
 
 	let selectedCheckboxes = {};
+  let noDataValue = ""
 
 	// Modify the handleCheckboxSelection function to handle individual checkbox state
 	function handleCheckboxSelection(column, value) {
+    noDataValue = value;
 		if (!selectedCheckboxes[column]) {
 			selectedCheckboxes[column] = [];
 		}
@@ -237,7 +245,7 @@
 					/>
 				</div>
 				<div>
-					<input type="submit" on:click={onSubmit} />
+					<input type="submit" on:click={onSubmit} on:click={() => (isOpen = !isOpen)} />
 				</div>
 			</div>
 			{#if searchData != '' && inputValue != ''}
@@ -946,29 +954,46 @@
 								</td>
 							</tr>
 						</thead>
-						<tbody>
-							{#each searchData as item, index}
-								<tr>
-									<td>{item.msisdn || ''}</td>
-									<td>{item.source_ip || ''}</td>
-									<td>{item.source_port || ''}</td>
-									<td>{item.destination_ip || ''}</td>
-									<td>{item.destination_port || ''}</td>
-									<td>{item.cell_id || ''}</td>
-									<td>{item.company || ''}</td>
-									<td>{item.domain || ''}</td>
-									<td>{item.service || ''}</td>
-									<td>{convertToISO8601(item.time) || ''}</td>
-									<td>{convertToISO8601(item.time_et) || ''}</td>
-									<td></td>
-									<td>{item.uplink_vol || ''}</td>
-									<td>{item.downlink_vol || ''}</td>
-									<td>{item.com_type || ''}</td>
-									<td>{item.roaming || ''}</td>
-									<td>{item.provider || ''}</td>
-								</tr>
-							{/each}
-						</tbody>
+            <tbody>
+              {#if searchData == "no matched data found"}
+            <tr>
+                <td colspan="17" style="height: 75vh;">
+                  <div style="width: 64%; padding-right: 600px; padding-left: 600px;">
+                    <div>
+                      <img src="nodata.png" alt="opps! "/>
+                      
+                    </div>   
+                    <div style="text-align: center;">
+                      No data found on the {noDataValue}
+                    </div>
+                  </div>                                     
+                </td>             
+            </tr>
+            {:else}
+            {#each searchData as item, index}
+                <tr>
+                    <td>{item.msisdn || ''}</td>
+                    <td>{item.source_ip || ''}</td>
+                    <td>{item.source_port || ''}</td>
+                    <td>{item.destination_ip || ''}</td>
+                    <td>{item.destination_port || ''}</td>
+                    <td>{item.cell_id || ''}</td>
+                    <td>{item.company || ''}</td>
+                    <td>{item.domain || ''}</td>
+                    <td>{item.service || ''}</td>
+                    <td>{convertToISO8601(item.time) || ''}</td>
+                    <td>{convertToISO8601(item.time_et) || ''}</td>
+                    <td></td>
+                    <td>{item.uplink_vol || ''}</td>
+                    <td>{item.downlink_vol || ''}</td>
+                    <td>{item.com_type || ''}</td>
+                    <td>{item.roaming || ''}</td>
+                    <td>{item.provider || ''}</td>
+                </tr>
+            {/each}
+        {/if}     
+            </tbody>
+                 
 					</table>
 				</div>
 				<div class="table-pagination">
@@ -977,23 +1002,13 @@
 							Total Count : {length} and Total Page : {total_page}
 						</p>
 					</div>
-					<div>
-						<button type="button" class="button-primary" on:click={() => handleFirst()}
-							>First</button
-						>
-						<button type="button" class="button-primary" on:click={() => handlePrevious(total_page)}
-							>Previous</button
-						>
-						<button type="button" class="button-primary" style="margin-left:4px; margin-right:4px"
-							>{currentPage}</button
-						>
-						<button type="button" class="button-primary" on:click={() => handleNext(total_page)}>
-							Next</button
-						>
-						<button type="button" class="button-primary" on:click={() => handleLast(total_page)}
-							>Last</button
-						>
-					</div>
+          <div>
+            <button type="button" class="button-primary" on:click={() => handleFirst()} disabled={currentPage === 1}>First</button>
+            <button type="button" class="button-primary" on:click={() => handlePrevious(total_page)} disabled={currentPage === 1}>Previous</button>
+            <span>{currentPage}</span>
+            <button type="button" class="button-primary" on:click={() => handleNext(total_page)} disabled={currentPage === total_page}>Next</button>
+            <button type="button" class="button-primary" on:click={() => handleLast(total_page)} disabled={currentPage === total_page}>Last</button>
+          </div>        
 				</div>
 			{/if}
 		</div>
@@ -1111,6 +1126,7 @@
 		align-items: center;
 	}
 	.button-primary {
+    cursor: pointer;
 		height: 36px;
 		text-align: center;
 		background-color: #5cb2eb;
@@ -1118,9 +1134,13 @@
 		border-radius: 2px;
 		border-bottom: #5cb2eb;
 	}
-	.button-primary:hover {
-		background-color: white;
-		color: #5cb2eb;
+  .button-primary:disabled {
+		height: 36px;
+		text-align: center;
+		background-color: #ffffff;
+		color: rgb(0, 0, 0);
+		border-radius: 2px;
+    cursor: not-allowed;
 		border-bottom: #5cb2eb;
 	}
   
@@ -1145,10 +1165,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		width: 170px; /* Adjust this width as needed */
+		width: 130px; /* Adjust this width as needed */
 	}
 
 	.ellipsis-fit {
+    font-size: 16px;
 		position: relative;
 		overflow: hidden;
 		text-overflow: ellipsis;

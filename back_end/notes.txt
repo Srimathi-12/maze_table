@@ -230,3 +230,157 @@ def unique_data():
 #         #     print(value,"valuevalueok")
 #         #     if key in unique_values:
 #         #         unique_values[key] = [v for v in unique_values[key] if value in v]  
+
+
+
+{#if isOpen}
+      {#if searchData == '' && inputValue != ''}
+      <div class="table-style">
+        <table>
+          <thead>
+            <tr class="header-style">
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="MSISDN">MSISDN</div>
+                  <div class="filter-icon">
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="SOURCE IP">SOURCE IP</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(2)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="SOURCE PORT">SOURCE PORT</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(3)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="OTHER IP">OTHER IP</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(4)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="OTHER PORT">OTHER PORT</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(5)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="CGID">CGID</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(6)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="COMPANY">COMPANY</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(7)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="DOMAIN">DOMAIN</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(8)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="VPN">VPN</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(9)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="START TIME">START TIME</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(10)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="END TIME">END TIME</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(11)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="DURATION">DURATION</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(12)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="UP LINK">UP LINK</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(13)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="DOWN LINK">DOWN LINK</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(14)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="IP TYPE">IP TYPE</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(15)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="HOME CIRCLE">HOME CIRCLE</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(16)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="header-align">
+                  <div class="ellipsis-fit" title="PROVIDER">PROVIDER</div>
+                  <div class="filter-icon" on:click={() => toggleDropdown(17)}>
+                    <img src="filter.svg" alt="" />
+                  </div>
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <div> opp's matched data not found</div>
+            </tr>
+          </thead>
+              </table>
+            </div>
+            {/if}
+            {/if}
